@@ -1,13 +1,83 @@
+:root {
+    --font-color-light: #f5f7fb;
+    --font-color-dark: #293264;
+    --background-color: #4d5b9e;
+    --background-active-color: #d6dbf5;
+    --app-background-color: hwb(231 89% 3%);
+    --background-wrong-color: #f8bcbc;
+    --background-right-color: #94d7a2;
+}
 body {
-  margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell',
+        'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: var(--font-color-dark);
+    background-color: var(--app-background-color);
 }
 
 code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
+    font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace;
+}
+.btn {
+    background-color: var(--background-color);
+    color: var(--font-color-light);
+    font-weight: 500;
+    outline: none;
+    border: none;
+    cursor: pointer;
+}
+.btn--big {
+    border-radius: 15px;
+    padding: 15px 50px;
+}
+.btn--normal {
+    border-radius: 15px;
+    padding: 15px 50px;
+}
+
+.questions--wrapper {
+    margin: 40px 15px;
+
+    max-width: 700px;
+    line-height: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+}
+.question--title > h4 {
+    margin-bottom: 10px;
+}
+.question--options {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+.question--btn-option {
+    text-align: center;
+    border: 1px solid var(--background-color);
+    border-radius: 10px;
+    padding: 2px 20px;
+    margin-right: 10px;
+    font-size: 0.9rem;
+    cursor: pointer;
+}
+
+.question--btn-option.active {
+    border: none;
+    background-color: var(--background-active-color);
+}
+
+.question--btn-option.wrong {
+    border: none;
+    background-color: var(--background-wrong-color);
+}
+.question--btn-option.right {
+    border: none;
+    background-color: var(--background-right-color);
 }
