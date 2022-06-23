@@ -30,6 +30,7 @@ code {
     outline: none;
     border: none;
     cursor: pointer;
+    margin: 15px;
 }
 .btn--big {
     border-radius: 15px;

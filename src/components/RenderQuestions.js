@@ -14,11 +14,15 @@ export default function RenderQuestions(props) {
                         })
                             ? 'question--btn-option active'
                             : 'question--btn-option';
-                        if (props.check) {
-                            // classes =
-                            //     answer.answer === props.correctAnswer
-                            //         ? classes + ' right'
-                            //         : classes + ' wrong';
+                        if (props.isCheck) {
+                            props.answers.find((answer) => {
+                                if (answer.answer === option && option === questionObj.correctAnswer) {
+                                    classes += ' right';
+                                } else if (answer.answer === option && option !== questionObj.correctAnswer) {
+                                    classes += ' wrong';
+                                } else {
+                                }
+                            });
                         }
                         return (
                             <div

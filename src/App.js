@@ -8,7 +8,7 @@ import Button from './components/Button';
 function App() {
     const [quiz, setQuiz] = React.useState({
         isStarted: false,
-        check: false,
+        isCheck: false,
         answers: [],
         questions: (() => JSON.parse(localStorage.getItem('questions')) || getQuestions())()
     });
@@ -53,7 +53,7 @@ function App() {
                 };
             });
             setQuiz((prevState) => {
-                return { ...prevState, answers: [], quizGameArr: quizGameArr };
+                return { ...prevState, answers: [], isCheck: false, quizGameArr: quizGameArr };
             });
         }
         makeQuizGameArr();
@@ -62,6 +62,15 @@ function App() {
 
     //* handlers
     function handleOptionClick(el, option, questionId) {
+        if (quiz.isCheck) {
+            return;
+        }
+        if (
+            quiz.answers.find((e) => e.answer !== option) &&
+            quiz.answers.find((e) => e.questionId === questionId)
+        ) {
+            return;
+        }
         if (quiz.answers.find((e) => e.answer === option)) {
             let index = quiz.answers.findIndex((e) => e.answer === option);
             setQuiz((prevState) => {
@@ -78,9 +87,10 @@ function App() {
             return { ...prevState, answers: newAnswers };
         });
     }
-    function checkAllAnswers(answers, currentGame) {
-        currentGame.find((answer) => {
-            console.log(answer.id, '- id');
+    function toggleCheckState() {
+        // TODO count right and  false answers
+        setQuiz((prevState) => {
+            return { ...prevState, isCheck: !prevState.isCheck };
         });
     }
     //* buttons
@@ -96,7 +106,7 @@ function App() {
     let checkAnswersBtn = {
         text: 'Check answers',
         className: 'btn btn--normal ',
-        onClick: () => checkAllAnswers(quiz.answers, quiz.quizGameArr)
+        onClick: () => toggleCheckState()
     };
     return (
         <div className="App">
@@ -107,8 +117,7 @@ function App() {
                             questions={quiz.quizGameArr}
                             answers={quiz.answers}
                             handleClick={handleOptionClick}
-                            check={quiz.check}
-                            
+                            isCheck={quiz.isCheck}
                         />
                     )}
                     <Button {...checkAnswersBtn} />
