@@ -1,6 +1,7 @@
 :root {
     --font-color-light: #f5f7fb;
     --font-color-dark: #293264;
+    --color-disabled: hsla(231, 43%, 28%, 0.5);
     --background-color: #4d5b9e;
     --background-active-color: #d6dbf5;
     --app-background-color: hwb(231 89% 3%);
@@ -77,8 +78,13 @@ code {
 .question--btn-option.wrong {
     border: none;
     background-color: var(--background-wrong-color);
+    color: var(--color-disabled);
 }
 .question--btn-option.right {
     border: none;
     background-color: var(--background-right-color);
+}
+.question--btn-option.disabled {
+    border: 1px solid var(--color-disabled);
+    color: var(--color-disabled);
 }
