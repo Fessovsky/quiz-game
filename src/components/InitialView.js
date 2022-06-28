@@ -6,6 +6,7 @@ export default function InitialView(props) {
         <>
             <h1>Quiz master</h1>
             <p>Just a regular quiz game</p>
+
             <Button {...props} />
         </>
     );

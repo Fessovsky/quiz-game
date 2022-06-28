@@ -7,14 +7,19 @@ import Button from './components/Button';
 
 function App() {
     const [quiz, setQuiz] = React.useState({
+        apiFlags: { amount: 10, category: 9, difficulty: 'medium' },
         isStarted: false,
         isCheck: false,
         answers: [],
-        questions: (() => JSON.parse(localStorage.getItem('questions')) || getQuestions())()
+        questions: (() => JSON.parse(localStorage.getItem('questions')) || getQuestions())(),
+        totalCorrectAnswers: 0,
+        quizGameArr: []
     });
 
     async function getQuestions() {
-        const res = await fetch('https://opentdb.com/api.php?amount=10');
+        const res = await fetch(
+            `https://opentdb.com/api.php?amount=${quiz.apiFlags.amount}&category=${quiz.apiFlags.category}&difficulty=${quiz.apiFlags.difficulty}`
+        );
         const data = await res.json();
         const newData = {};
 
@@ -57,7 +62,6 @@ function App() {
             });
         }
         makeQuizGameArr();
-        console.log('questions changed');
     }, [quiz.questions]);
 
     //* handlers
@@ -65,32 +69,47 @@ function App() {
         if (quiz.isCheck) {
             return;
         }
-        if (
-            quiz.answers.find((e) => e.answer !== option) &&
-            quiz.answers.find((e) => e.questionId === questionId)
-        ) {
+        if (quiz.answers.find((e) => e.answer !== option && e.questionId === questionId)) {
             return;
         }
-        if (quiz.answers.find((e) => e.answer === option)) {
-            let index = quiz.answers.findIndex((e) => e.answer === option);
+        if (quiz.answers.find((e) => e.answer === option && e.questionId === questionId)) {
+            let index = quiz.answers.findIndex((e) => e.answer === option && e.questionId === questionId);
             setQuiz((prevState) => {
                 let newAnswers = [...prevState.answers];
                 newAnswers.splice(index, 1);
                 return { ...prevState, answers: newAnswers };
             });
-            return;
-        }
 
-        setQuiz((prevState) => {
-            let newAnswers = [...prevState.answers];
-            newAnswers.push({ questionId: questionId, answer: option });
-            return { ...prevState, answers: newAnswers };
-        });
+            return;
+        } else {
+            let originalQuestion = quiz.quizGameArr.filter((e) => e.id === questionId);
+            setQuiz((prevState) => {
+                let newAnswers = [...prevState.answers];
+                newAnswers.push({
+                    questionId: questionId,
+                    answer: option,
+                    question: originalQuestion[0].question
+                });
+                return { ...prevState, answers: newAnswers };
+            });
+        }
     }
     function toggleCheckState() {
-        // TODO count right and  false answers
+        let correctAnswersLength = quiz.answers.filter((answer) => {
+            if (
+                quiz.quizGameArr.find((e) => {
+                    return e.correctAnswer === answer.answer && e.question === answer.question;
+                })
+            ) {
+                return 1;
+            } else {
+                return 0;
+            }
+        });
+
+        correctAnswersLength = correctAnswersLength.length;
         setQuiz((prevState) => {
-            return { ...prevState, isCheck: !prevState.isCheck };
+            return { ...prevState, isCheck: !prevState.isCheck, totalCorrectAnswers: correctAnswersLength };
         });
     }
     //* buttons
@@ -120,8 +139,16 @@ function App() {
                             isCheck={quiz.isCheck}
                         />
                     )}
-                    <Button {...checkAnswersBtn} />
-                    <Button onClick={getQuestions} text="Get new questions" className="btn btn--normal" />
+                    {quiz.isCheck ? (
+                        `Your score ${quiz.totalCorrectAnswers}/${quiz.questions.length} correct answers`
+                    ) : (
+                        <Button {...checkAnswersBtn} />
+                    )}
+                    <Button
+                        onClick={getQuestions}
+                        text={quiz.isCheck ? 'Play again' : 'Get new questions'}
+                        className="btn btn--normal"
+                    />
                 </div>
             ) : (
                 <InitialView {...buttonInitial} />

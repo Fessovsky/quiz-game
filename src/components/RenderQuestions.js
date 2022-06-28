@@ -10,17 +10,30 @@ export default function RenderQuestions(props) {
                 <div className="question--options">
                     {questionObj.allAnswers.map((option, j) => {
                         let classes = props.answers.find((answer) => {
-                            return answer.answer === option;
+                            return answer.answer === option && answer.questionId === questionObj.id;
                         })
                             ? 'question--btn-option active'
                             : 'question--btn-option';
                         if (props.isCheck) {
-                            props.answers.find((answer) => {
-                                if (answer.answer === option && option === questionObj.correctAnswer) {
+                            props.answers.map((answer) => {
+                                if (
+                                    // answer.answer === option &&
+                                    answer.questionId === questionObj.id &&
+                                    option === questionObj.correctAnswer
+                                ) {
                                     classes += ' right';
-                                } else if (answer.answer === option && option !== questionObj.correctAnswer) {
+                                } else if (
+                                    answer.questionId === questionObj.id &&
+                                    answer.answer === option &&
+                                    option !== questionObj.correctAnswer
+                                ) {
                                     classes += ' wrong';
-                                } else {
+                                } else if (
+                                    answer.questionId === questionObj.id &&
+                                    answer.answer !== option &&
+                                    option !== questionObj.correctAnswer
+                                ) {
+                                    classes += ' disabled';
                                 }
                             });
                         }
