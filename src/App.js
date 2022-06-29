@@ -4,10 +4,11 @@ import he from 'he';
 import InitialView from './components/InitialView';
 import RenderQuestions from './components/RenderQuestions';
 import Button from './components/Button';
-
+import Settings from './components/Settings';
+// TODO 1. block Get new questions button till have new answers prevent multiple clicks
+// TODO 2.
 function App() {
     const [quiz, setQuiz] = React.useState({
-        apiFlags: { amount: 10, category: 9, difficulty: 'medium' },
         isStarted: false,
         isCheck: false,
         answers: [],
@@ -15,11 +16,21 @@ function App() {
         totalCorrectAnswers: 0,
         quizGameArr: []
     });
-
+    const [apiFlags, setApiFlags] = React.useState({
+        amount: 10,
+        category: 9,
+        difficulty: 'medium',
+        isChanged: false
+    });
+    let uri = React.useMemo(
+        () =>
+            `https://opentdb.com/api.php?amount=${apiFlags.amount}&category=${
+                apiFlags.category
+            }&difficulty=${apiFlags.difficulty.toLowerCase()}`,
+        [apiFlags]
+    );
     async function getQuestions() {
-        const res = await fetch(
-            `https://opentdb.com/api.php?amount=${quiz.apiFlags.amount}&category=${quiz.apiFlags.category}&difficulty=${quiz.apiFlags.difficulty}`
-        );
+        const res = await fetch(uri);
         const data = await res.json();
         const newData = {};
 
@@ -62,7 +73,7 @@ function App() {
             });
         }
         makeQuizGameArr();
-    }, [quiz.questions]);
+    }, [quiz.questions, apiFlags]);
 
     //* handlers
     function handleOptionClick(el, option, questionId) {
@@ -105,20 +116,27 @@ function App() {
             } else {
                 return 0;
             }
-        });
+        }).length;
 
-        correctAnswersLength = correctAnswersLength.length;
         setQuiz((prevState) => {
             return { ...prevState, isCheck: !prevState.isCheck, totalCorrectAnswers: correctAnswersLength };
         });
     }
     //* buttons
     let buttonInitial = {
-        onClick: () =>
+        onClick: () => {
+            if (apiFlags.isChanged) {
+                setApiFlags((prevState) => {
+                    return { ...prevState, isChanged: false };
+                });
+                console.log(uri);
+                getQuestions();
+            }
             setQuiz((prevState) => ({
                 ...prevState,
                 isStarted: !prevState.isStarted
-            })),
+            }));
+        },
         text: 'Start quiz',
         className: 'btn btn--big '
     };
@@ -127,6 +145,45 @@ function App() {
         className: 'btn btn--normal ',
         onClick: () => toggleCheckState()
     };
+    function handleInputChange(event) {
+        console.log('start event');
+        const { name, value } = event.target;
+        setApiFlags((prevState) => ({
+            ...prevState,
+            isChanged: true,
+            [name]: value
+        }));
+    }
+    let settingsInputs = [
+        {
+            type: 'number',
+            placeholder: 'Amount of questions',
+            className: 'settings--input',
+            name: 'amount',
+            min: 1,
+            max: 10,
+            value: apiFlags.amount,
+            onChange: (e) => handleInputChange(e)
+        },
+        {
+            type: 'text',
+            placeholder: 'Category of questions',
+            className: 'settings--input',
+            name: 'category',
+            options: [''],
+            value: apiFlags.category,
+            onChange: handleInputChange
+        },
+        {
+            type: 'text',
+            placeholder: 'Difficulty of questions',
+            className: 'settings--input',
+            name: 'difficulty',
+            options: ['Choose', 'Easy', 'Medium', 'Hard'],
+            value: apiFlags.difficulty,
+            onChange: handleInputChange
+        }
+    ];
     return (
         <div className="App">
             {quiz.isStarted ? (
@@ -151,7 +208,10 @@ function App() {
                     />
                 </div>
             ) : (
-                <InitialView {...buttonInitial} />
+                <>
+                    <InitialView {...buttonInitial} />
+                    <Settings inputs={settingsInputs} />
+                </>
             )}
         </div>
     );
