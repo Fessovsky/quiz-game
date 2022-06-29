@@ -88,3 +88,20 @@ code {
     border: 1px solid var(--color-disabled);
     color: var(--color-disabled);
 }
+
+.settings--input {
+    border: 1px solid var(--background-color);
+    border-radius: 10px;
+    padding: 2px 3px;
+    margin: 5px;
+    font-size: 0.9rem;
+    text-indent: 3px;
+    max-width: 105px;
+    width: 105px;
+}
+.settings--wrapper {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
