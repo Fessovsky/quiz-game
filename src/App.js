@@ -230,21 +230,23 @@ function App() {
                             isCheck={quiz.isCheck}
                         />
                     )}
-                    {quiz.isCheck ? (
-                        `Your score ${quiz.totalCorrectAnswers}/${quiz.questions.length} correct answers`
-                    ) : (
-                        <Button {...checkAnswersBtn} />
-                    )}
-                    <Button
-                        onClick={getQuestions}
-                        text={quiz.isCheck ? 'Play again' : 'Get new questions'}
-                        className="btn btn--normal"
-                    />
-                    <Button
-                        onClick={() => setQuiz((prevState) => ({ ...prevState, isStarted: false }))}
-                        text="Settings"
-                        className="btn btn--normal"
-                    />
+                    <div className="buttons-wrapper">
+                        {quiz.isCheck ? (
+                            `Your score ${quiz.totalCorrectAnswers}/${quiz.questions.length} correct answers`
+                        ) : (
+                            <Button {...checkAnswersBtn} />
+                        )}
+                        <Button
+                            onClick={getQuestions}
+                            text={quiz.isCheck ? 'Play again' : 'Get new questions'}
+                            className="btn btn--normal"
+                        />
+                        <Button
+                            onClick={() => setQuiz((prevState) => ({ ...prevState, isStarted: false }))}
+                            text="Settings"
+                            className="btn btn--normal"
+                        />
+                    </div>
                 </div>
             ) : (
                 <>

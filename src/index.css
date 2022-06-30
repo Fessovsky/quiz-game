@@ -8,6 +8,7 @@
     --background-wrong-color: #f8bcbc;
     --background-right-color: #94d7a2;
 }
+
 body {
     margin: 0;
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell',
@@ -20,13 +21,20 @@ body {
     background-color: var(--app-background-color);
 }
 
-code {
-    font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace;
+hr {
+    color: var(--background-active-color);
+    width: 100%;
+    border: 1px solid;
+    margin-top: 15px;
 }
 .App {
+    padding: 10px;
     display: flex;
     flex-direction: column;
     align-items: center;
+}
+.App > p {
+    margin-top: 0;
 }
 .btn {
     background-color: var(--background-color);
@@ -109,6 +117,9 @@ code {
     width: 45px;
     padding: 2px 7px;
 }
+.settings--wrapper > label {
+    margin-top: 15px;
+}
 .settings--wrapper {
     display: flex;
     flex-direction: column;
@@ -119,7 +130,7 @@ code {
     display: block;
     position: absolute;
     top: 50%;
-    left: 50%;
+    left: auto;
 }
 /* animation */
 .loading > span:nth-child(1) {
@@ -139,9 +150,31 @@ code {
         opacity: 1;
     }
     50% {
-        opacity: 0;
+        opacity: 0.15;
     }
     100% {
         opacity: 1;
+    }
+}
+
+@media (max-width: 480px) {
+    .questions--wrapper {
+        margin: 15px;
+    }
+    .question--options {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .question--options > .question--btn-option {
+        margin-top: 10px;
+        margin-right: 0;
+    }
+    .buttons-wrapper {
+        display: flex;
+        flex-direction: column;
+    }
+    .buttons-wrapper > button {
+        margin: 5px 12px !important;
     }
 }
