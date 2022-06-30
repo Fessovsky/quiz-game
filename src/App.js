@@ -16,12 +16,14 @@ function App() {
         totalCorrectAnswers: 0,
         quizGameArr: []
     });
+
     const [apiFlags, setApiFlags] = React.useState({
         amount: 10,
         category: 9,
         difficulty: 'medium',
         isChanged: false
     });
+    const [isLoading, setLoading] = React.useState(false);
     let uri = React.useMemo(
         () =>
             `https://opentdb.com/api.php?amount=${apiFlags.amount}&category=${
@@ -30,6 +32,7 @@ function App() {
         [apiFlags]
     );
     async function getQuestions() {
+        setLoading(true);
         const res = await fetch(uri);
         const data = await res.json();
         const newData = {};
@@ -42,6 +45,7 @@ function App() {
             questions: newData.results
         }));
         localStorage.setItem('questions', JSON.stringify(newData.results));
+        setLoading(false);
     }
 
     React.useEffect(() => {
@@ -73,7 +77,7 @@ function App() {
             });
         }
         makeQuizGameArr();
-    }, [quiz.questions, apiFlags]);
+    }, [quiz.questions]);
 
     //* handlers
     function handleOptionClick(el, option, questionId) {
@@ -129,7 +133,6 @@ function App() {
                 setApiFlags((prevState) => {
                     return { ...prevState, isChanged: false };
                 });
-                console.log(uri);
                 getQuestions();
             }
             setQuiz((prevState) => ({
@@ -146,12 +149,11 @@ function App() {
         onClick: () => toggleCheckState()
     };
     function handleInputChange(event) {
-        console.log('start event');
         const { name, value } = event.target;
         setApiFlags((prevState) => ({
             ...prevState,
             isChanged: true,
-            [name]: value
+            [name]: +value || value
         }));
     }
     let settingsInputs = [
@@ -166,11 +168,36 @@ function App() {
             onChange: (e) => handleInputChange(e)
         },
         {
-            type: 'text',
+            type: 'number',
             placeholder: 'Category of questions',
             className: 'settings--input',
             name: 'category',
-            options: [''],
+            optionsobj: [
+                { id: 9, name: 'General Knowledge' },
+                { id: 10, name: 'Entertainment: Books' },
+                { id: 11, name: 'Entertainment: Film' },
+                { id: 12, name: 'Entertainment: Music' },
+                { id: 13, name: 'Entertainment: Musicals & Theatres' },
+                { id: 14, name: 'Entertainment: Television' },
+                { id: 15, name: 'Entertainment: Video Games' },
+                { id: 16, name: 'Entertainment: Board Games' },
+                { id: 17, name: 'Science & Nature' },
+                { id: 18, name: 'Science: Computers' },
+                { id: 19, name: 'Science: Mathematics' },
+                { id: 20, name: 'Mythology' },
+                { id: 21, name: 'Sports' },
+                { id: 22, name: 'Geography' },
+                { id: 23, name: 'History' },
+                { id: 24, name: 'Politics' },
+                { id: 25, name: 'Art' },
+                { id: 26, name: 'Celebrities' },
+                { id: 27, name: 'Animals' },
+                { id: 28, name: 'Vehicles' },
+                { id: 29, name: 'Entertainment: Comics' },
+                { id: 30, name: 'Science: Gadgets' },
+                { id: 31, name: 'Entertainment: Japanese Anime & Manga' },
+                { id: 32, name: 'Entertainment: Cartoon & Animations' }
+            ],
             value: apiFlags.category,
             onChange: handleInputChange
         },
@@ -186,7 +213,14 @@ function App() {
     ];
     return (
         <div className="App">
-            {quiz.isStarted ? (
+            {isLoading ? (
+                <h1 className="loading">
+                    Loading
+                    <span className="animate">.</span>
+                    <span className="animate">.</span>
+                    <span className="animate">.</span>
+                </h1>
+            ) : quiz.isStarted ? (
                 <div>
                     {quiz.quizGameArr.length > 0 && (
                         <RenderQuestions
@@ -204,6 +238,11 @@ function App() {
                     <Button
                         onClick={getQuestions}
                         text={quiz.isCheck ? 'Play again' : 'Get new questions'}
+                        className="btn btn--normal"
+                    />
+                    <Button
+                        onClick={() => setQuiz((prevState) => ({ ...prevState, isStarted: false }))}
+                        text="Settings"
                         className="btn btn--normal"
                     />
                 </div>
