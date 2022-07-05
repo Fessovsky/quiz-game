@@ -5,25 +5,29 @@ import InitialView from './components/InitialView';
 import RenderQuestions from './components/RenderQuestions';
 import Button from './components/Button';
 import Settings from './components/Settings';
-// TODO 1. block Get new questions button till have new answers prevent multiple clicks
-// TODO 2.
-function App() {
-    const [quiz, setQuiz] = React.useState({
-        isStarted: false,
-        isCheck: false,
-        answers: [],
-        questions: (() => JSON.parse(localStorage.getItem('questions')) || getQuestions())(),
-        totalCorrectAnswers: 0,
-        quizGameArr: []
-    });
 
+function App() {
+    const [isLoading, setLoading] = React.useState(false);
     const [apiFlags, setApiFlags] = React.useState({
         amount: 10,
         category: 9,
         difficulty: 'medium',
         isChanged: false
     });
-    const [isLoading, setLoading] = React.useState(false);
+
+    const [quiz, setQuiz] = React.useState({
+        isStarted: false,
+        isCheck: false,
+        answers: [],
+        questions: [],
+        totalCorrectAnswers: 0,
+        quizGameArr: []
+    });
+
+    const [initialQuestions, setInitialQuestions] = React.useState({
+        initialQuestionsArray: []
+    });
+
     let uri = React.useMemo(
         () =>
             `https://opentdb.com/api.php?amount=${apiFlags.amount}&category=${
@@ -31,29 +35,35 @@ function App() {
             }&difficulty=${apiFlags.difficulty.toLowerCase()}`,
         [apiFlags]
     );
-    async function getQuestions() {
-        setLoading(true);
-        const res = await fetch(uri);
-        const data = await res.json();
-        const newData = {};
-
-        newData['results'] = data.results.map((el) => {
-            return { ...el, id: uniqid('q-') };
+    React.useEffect(() => {
+        async function getQuestions() {
+            setLoading(true);
+            const res = await fetch(uri);
+            const data = await res.json();
+            const newData = {};
+            newData['results'] = data.results.map((el) => {
+                return { ...el, id: uniqid('q-') };
+            });
+            localStorage.setItem('initialQuestions', JSON.stringify(newData.results));
+            setInitialQuestions((prevState) => ({
+                ...prevState,
+                initialQuestionsArray: newData.results
+            }));
+            setLoading(false);
+        }
+        setInitialQuestions(() => {
+            return {
+                initialQuestionsArray: JSON.parse(localStorage.getItem('initialQuestions')) || getQuestions()
+            };
         });
-        setQuiz((prevState) => ({
-            ...prevState,
-            questions: newData.results
-        }));
-        localStorage.setItem('questions', JSON.stringify(newData.results));
-        setLoading(false);
-    }
+    }, [uri]);
 
     React.useEffect(() => {
         async function makeQuizGameArr() {
-            if ((await quiz.questions) === undefined) {
+            if (initialQuestions.initialQuestionsArray === undefined) {
                 return;
             }
-            const quizGameArr = quiz.questions.map((e) => {
+            const quizGameArr = initialQuestions.initialQuestionsArray.map((e) => {
                 let question = he.decode(e.question);
                 let correctAnswer = he.decode(e.correct_answer);
                 let optionsArr = [];
@@ -72,12 +82,13 @@ function App() {
                     allAnswers: optionsArr
                 };
             });
+
             setQuiz((prevState) => {
                 return { ...prevState, answers: [], isCheck: false, quizGameArr: quizGameArr };
             });
         }
         makeQuizGameArr();
-    }, [quiz.questions]);
+    }, [initialQuestions]);
 
     //* handlers
     function handleOptionClick(el, option, questionId) {
@@ -125,6 +136,21 @@ function App() {
         setQuiz((prevState) => {
             return { ...prevState, isCheck: !prevState.isCheck, totalCorrectAnswers: correctAnswersLength };
         });
+    }
+    async function getQuestions() {
+        setLoading(true);
+        const res = await fetch(uri);
+        const data = await res.json();
+        const newData = {};
+        newData['results'] = data.results.map((el) => {
+            return { ...el, id: uniqid('q-') };
+        });
+        localStorage.setItem('initialQuestions', JSON.stringify(newData.results));
+        setInitialQuestions((prevState) => ({
+            ...prevState,
+            initialQuestionsArray: newData.results
+        }));
+        setLoading(false);
     }
     //* buttons
     let buttonInitial = {
@@ -232,7 +258,7 @@ function App() {
                     )}
                     <div className="buttons-wrapper">
                         {quiz.isCheck ? (
-                            `Your score ${quiz.totalCorrectAnswers}/${quiz.questions.length} correct answers`
+                            `Your score ${quiz.totalCorrectAnswers}/${initialQuestions.initialQuestionsArray.length} correct answers`
                         ) : (
                             <Button {...checkAnswersBtn} />
                         )}

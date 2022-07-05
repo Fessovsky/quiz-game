@@ -1,7 +1,6 @@
 import React from 'react';
 
 export default function Import(props) {
-    // ! delete ^
     let input;
     if (props.options) {
         input = props.options.map((option, i) => {
