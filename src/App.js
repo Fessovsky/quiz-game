@@ -91,11 +91,23 @@ function App() {
     }, [initialQuestions]);
 
     //* handlers
-    function handleOptionClick(el, option, questionId) {
+    function handleOptionClick(option, questionId) {
         if (quiz.isCheck) {
             return;
         }
         if (quiz.answers.find((e) => e.answer !== option && e.questionId === questionId)) {
+            setQuiz((prevState) => {
+                let index = quiz.answers.findIndex((e) => e.answer === option && e.questionId === questionId);
+                let newAnswers = [...prevState.answers];
+                newAnswers.splice(index, 1);
+                let originalQuestion = quiz.quizGameArr.filter((e) => e.id === questionId);
+                newAnswers.push({
+                    questionId: questionId,
+                    answer: option,
+                    question: originalQuestion[0].question
+                });
+                return { ...prevState, answers: newAnswers };
+            });
             return;
         }
         if (quiz.answers.find((e) => e.answer === option && e.questionId === questionId)) {

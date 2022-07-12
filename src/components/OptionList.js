@@ -33,7 +33,7 @@ export default function QuestionList(props) {
         return (
             <div
                 key={props.questionObj.id + j}
-                onClick={(buttonElement) => props.handleClick(buttonElement, option, props.questionObj.id)}
+                onClick={() => props.handleClick( option, props.questionObj.id)}
                 className={classes}>
                 {option}
             </div>
