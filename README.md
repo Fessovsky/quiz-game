@@ -1,4 +1,4 @@
-## Trivia game\
+## Trivia game
 Choose difficulty, how many questions you need and categories in settings block.
 React, HTML, CSS
 
