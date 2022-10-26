@@ -1,6 +1,6 @@
 ## Trivia game
-Choose difficulty, how many questions you need and categories in settings block.
-React, HTML, CSS
+Choose difficulty, how many questions you need and categories in settings block.\
+Build with React, HTML, CSS
 
 ## Scripts
 
