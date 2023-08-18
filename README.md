@@ -1,3 +1,6 @@
+## Netlify
+[Link for try it out](https://fessquizgame.netlify.app/)
+
 ## Trivia game
 Choose difficulty, how many questions you need and categories in settings block.\
 Build with React, HTML, CSS
